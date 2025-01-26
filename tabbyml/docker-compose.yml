@@ -1,0 +1,19 @@
+services:
+  tabby:
+    restart: unless-stopped
+    image: tabbyml/tabby
+    command: serve --model StarCoder-1B --device cuda
+    volumes:
+      - "${TABBY_DATA}:/data"
+    ports:
+      - 8083:8080
+    environment:
+      - TABBY_DISABLE_USAGE_COLLECTION=1
+      - TABBY_WEBSERVER_JWT_TOKEN_SECRET=${TABBY_WEBSERVER_JWT_TOKEN_SECRET}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

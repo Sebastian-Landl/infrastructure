@@ -1,0 +1,17 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    group_add:
+      - "${RENDER_GROUP_ID}"
+    ports:
+      - 8096:8096
+    volumes:
+      - ${CONFIG_PATH}:/config
+      - ${CACHE_PATH}:/cache
+      - ${MEDIA_PATH}:/media:ro
+    restart: unless-stopped
+    environment:
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHED_SERVER_URL}
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128

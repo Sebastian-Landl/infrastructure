@@ -1,0 +1,19 @@
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    environment:
+      - CUDA_VISIBLE_DEVICES=${OLLAMA_CUDA_VISIBLE_DEVICES}
+    volumes:
+      - ${OLLAMA_VOLUME}:/root/.ollama
+    restart: unless-stopped
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: ${OLLAMA_GPU_DRIVER}
+              count: all
+              capabilities: [ gpu ]
