@@ -1,0 +1,16 @@
+services:
+  github-runner:
+    image: ghcr.io/actions/actions-runner:latest
+    container_name: ${CONTAINER_NAME}
+    entrypoint: ["/bin/bash", "-c", "./config.sh --unattended --url ${REPO_URL} --token ${RUNNER_TOKEN} ${RUNNER_NAME:+--name ${RUNNER_NAME}} ${RUNNER_LABELS:+--labels ${RUNNER_LABELS}} && ./run.sh"]
+    environment:
+      - REPO_URL=${REPO_URL}
+      - RUNNER_TOKEN=${RUNNER_TOKEN}
+      - RUNNER_NAME=${RUNNER_NAME}
+      - RUNNER_LABELS=${RUNNER_LABELS}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '${CPUS}'
+          memory: ${MEMORY}
