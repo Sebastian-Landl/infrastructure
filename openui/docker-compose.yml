@@ -1,0 +1,11 @@
+services:
+  openui:
+    image: ghcr.io/wandb/openui
+    container_name: openui
+    ports:
+      - ${OPENUI_PORT}:7878
+    environment:
+      - OLLAMA_HOST=${OLLAMA_HOST}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Add host.docker.internal for accessing the host machine (use it, if you want to access e.g. an ollama instance running on the host machine)
