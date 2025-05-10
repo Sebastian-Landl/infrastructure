@@ -9,6 +9,9 @@ services:
       - RUNNER_NAME=${RUNNER_NAME}
       - RUNNER_LABELS=${RUNNER_LABELS}
     restart: unless-stopped
+    # in case you need to reach the docker host at "host.docker.internal" inside the runner
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits:
