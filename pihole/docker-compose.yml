@@ -5,16 +5,22 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8053:80/tcp"
+      - "${PIHOLE_PORT}:8053/tcp"
     environment:
-      TZ: '${TIMEZONE}'
-      WEBPASSWORD: ${WEB_PASSWORD}
+      TZ: ${TIMEZONE}
+      FTLCONF_webserver_api_password: '${WEB_PASSWORD}'
+      FTLCONF_dns_upstreams: '${PIHOLE_DNS_UPSTREAMS}'
+      FTLCONF_webserver_port: '8053,443s'
     volumes:
-      - '${ETC_PIHOLE}:/etc/pihole'
-      - '${ETC_DNSMASQ}:/etc/dnsmasq.d'
+      - pihole:/etc/pihole
+      - dnsmasq:/etc/dnsmasq.d
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: '256M'
+          memory: '512M'
+
+volumes:
+  pihole:
+  dnsmasq:
