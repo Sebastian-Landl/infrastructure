@@ -1,0 +1,24 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT}:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - NODE_ENV=production
+      - WEBHOOK_URL=${N8N_PROTOCOL}://${N8N_HOST}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_CONCURRENCY_PRODUCTION_LIMIT=${N8N_CONCURRENCY_PRODUCTION_LIMIT:-1}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Add host.docker.internal for accessing the host machine
+
+volumes:
+  n8n_data:
