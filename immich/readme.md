@@ -1,0 +1,1 @@
+Recommended [Immich](https://immich.app/) setup taken from [here](https://docs.immich.app/install/docker-compose/), customized to use nvenc, cuda, DB on HDD and using traefik labels.
