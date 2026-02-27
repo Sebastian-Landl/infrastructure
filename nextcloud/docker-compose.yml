@@ -1,30 +1,95 @@
 services:
-  nextcloud-db:
-    image: postgres:latest
+
+  db:
+    image: postgres:18.3-alpine3.23
     container_name: nextcloud-db
     restart: unless-stopped
-    volumes:
-      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=nextcloud
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${POSTGRES_DATA}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
-  nextcloud:
-    image: nextcloud:latest
+  redis:
+    image: redis:8.6.0-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: redis-server --port 6379 --requirepass ${REDIS_PASSWORD}
+    networks:
+      - internal
+
+  app:
+    image: nextcloud:33.0.0-apache
     container_name: nextcloud-app
     restart: unless-stopped
-    hostname: ${NEXTCLOUD_HOSTNAME}
-    ports:
-      - 8082:80
-    volumes:
-      - ${NEXTCLOUD_PATH}:/var/www/html
-    environment:
-      - POSTGRES_HOST=nextcloud-db
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_PASSWORD}
-      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_USER}
-      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
     depends_on:
-      - nextcloud-db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ${NEXTCLOUD_DIR}:/var/www/html
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      #NC_setup_create_db_user: "false" # may help if nextcloud tries to create the db user and fails because it already exists
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_HOST_PASSWORD: ${REDIS_PASSWORD}
+
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      
+      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS}
+      OVERWRITEPROTOCOL: ${NEXTCLOUD_OVERWRITEPROTOCOL}
+
+      PHP_UPLOAD_LIMIT: 100G
+      PHP_MEMORY_LIMIT: 1024M
+      APAPACHE_BODY_LIMIT: 100G
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+    networks:
+      - internal
+      - public
+
+  cron:
+    image: nextcloud:33.0.0-apache
+    container_name: nextcloud-cron
+    restart: unless-stopped
+    entrypoint: /cron.sh
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ${NEXTCLOUD_DIR}:/var/www/html
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+  public:
+    external: true
