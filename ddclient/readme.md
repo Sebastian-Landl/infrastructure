@@ -1,4 +1,4 @@
-For `ddclient` to work the config must be correct. The file `ddclient.conf` must be placed inside a folder `config` and the location of that folder must be specified in the `.env` file (`DDCLIENT_CONFIG`).  
+For `ddclient` to work the config must be correct. The file `ddclient.conf` must be placed inside a folder `config` and the location of that folder must be specified in the `.env` file (`DDCLIENT_CONFIG_DIR`).  
 In `ddclient.conf` some general settings are specified and most importantly the information on how the DNS entry for a domain can be updated.
 
 ### General settings
