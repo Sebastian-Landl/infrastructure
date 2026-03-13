@@ -6,14 +6,17 @@ services:
       - "11434:11434"
     environment:
       - CUDA_VISIBLE_DEVICES=${OLLAMA_CUDA_VISIBLE_DEVICES}
+      - OLLAMA_CONTEXT_LENGTH=${OLLAMA_CONTEXT_LENGTH:262144}
+      - OLLAMA_FLASH_ATTENTION=${OLLAMA_FLASH_ATTENTION:true}
+      - OLLAMA_KV_CACHE_TYPE=${OLLAMA_KV_CACHE_TYPE:q8_0}
     volumes:
-      - ${OLLAMA_VOLUME}:/root/.ollama
+      - ${OLLAMA_MODEL_PATH}:/root/.ollama
     restart: unless-stopped
 
     deploy:
       resources:
         reservations:
           devices:
-            - driver: ${OLLAMA_GPU_DRIVER}
+            - driver: ${GPU_DRIVER:nvidia}
               count: all
               capabilities: [ gpu ]
