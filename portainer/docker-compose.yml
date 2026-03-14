@@ -15,7 +15,7 @@ services:
   portainer:
     image: portainer/portainer-ce:2.39.0
     container_name: portainer
-    command: -H tcp://agent:9001 --tlsskipverify
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
     volumes:
       - ${PORTAINER_DATA}:/data
     networks:
@@ -35,6 +35,7 @@ services:
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
 networks:
-  agent_network: {}
+  agent_network:
+    driver: overlay
   public:
     external: true
