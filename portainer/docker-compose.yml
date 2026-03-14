@@ -36,6 +36,6 @@ services:
 
 networks:
   agent_network:
-    driver: overlay
+    external: true
   public:
     external: true
