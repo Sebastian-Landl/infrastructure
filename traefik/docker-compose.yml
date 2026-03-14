@@ -19,6 +19,7 @@ services:
       - "traefik.http.routers.traefik-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.middlewares=user-auth@file"
       - "traefik.http.routers.traefik-secure.service=api@internal"
+    restart: unless-stopped
 
 networks:
   public:
