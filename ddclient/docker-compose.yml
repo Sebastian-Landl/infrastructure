@@ -1,13 +1,13 @@
 services:
   ddclient:
-    image: lscr.io/linuxserver/ddclient:latest
+    image: lscr.io/linuxserver/ddclient:4.0.0
     container_name: ddclient
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ${DDCLIENT_CONFIG}:/config
+      - ${DDCLIENT_CONFIG_DIR}:/config
     restart: unless-stopped
     deploy:
       resources:
