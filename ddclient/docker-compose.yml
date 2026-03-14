@@ -7,7 +7,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ${DDCLIENT_CONFIG_DIR}:/config
+      - ${DDCLIENT_CONFIG_DIR}:/config:ro
     restart: unless-stopped
     deploy:
       resources:
