@@ -2,18 +2,22 @@ services:
   traefik:
     image: traefik:v3.6.10
     container_name: traefik
-    command:
-      - "--configFile=/etc/traefik/traefik.yml"
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${TRAEFIK_CONFIG_PATH}:/etc/traefik/traefik.yml:ro
-      - ${TRAEFIK_ACME_PATH}:/acme.json
     networks:
       - public
-
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${TRAEFIK_YML_PATH}:/etc/traefik/traefik.yml:ro
+      - ${TRAEFIK_ACME_PATH}:/acme.json
+      - ${TRAEFIK_CONFIGURATIONS_PATH}:/configurations
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik-secure.middlewares=user-auth@file"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
 networks:
-  traefik-net:
-    name: public
+  public:
