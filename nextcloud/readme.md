@@ -10,6 +10,9 @@
 - `NEXTCLOUD_OVERWRITEPROTOCOL`: if you want to use https, set this to `https`, otherwise to `http`. This must correspond to your access method.
 - `NEXTCLOUD_DIR`: path to store nextcloud and data (could also be a volume mount)
 
+## Postgres DB notes
+The folder `postgres_data` needs to have the user and group permissions set to `999:999` for the postgres container to be able to write to it. You can do that with the following command: `sudo chown -R 999:999 postgres_data/`
+
 ## TODO: test, make unnecessary and move to an archive section
 
 ### Additional setup, if the Nextcloud Client does not connect 

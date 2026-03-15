@@ -21,5 +21,5 @@ For managing the LLMs available to the container, I pull the required images at 
 - `docker exec -it <container_id> /bin/bash` to get a bash inside the container
 - `ollama pull <model>` to pull the actual model
 
-## model_backend network
+## litellm_model_backend network
 This network is declared in the litellm docker-compose.yml and is used to allow the ollama container to communicate with the litellm proxy container, without exposing the ollama container to the public network. The litellm proxy can then route requests to the ollama container when a request is made to the corresponding model.

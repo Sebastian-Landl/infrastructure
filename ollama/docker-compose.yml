@@ -13,7 +13,7 @@ services:
       - ${OLLAMA_MODEL_PATH}:/root/.ollama
     restart: unless-stopped
     networks:
-      - model_backend
+      - litellm_model_backend
     deploy:
       resources:
         reservations:
@@ -23,5 +23,5 @@ services:
               capabilities: [ gpu ]
 
 networks:
-  model_backend:
+  litellm_model_backend:
     external: true
