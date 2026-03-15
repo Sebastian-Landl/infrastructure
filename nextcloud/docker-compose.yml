@@ -37,7 +37,7 @@ services:
       redis:
         condition: service_started
     volumes:
-      - ${NEXTCLOUD_DIR}:/var/www/html
+      - ${NEXTCLOUD_DATA}:/var/www/html
     environment:
       POSTGRES_HOST: db
       POSTGRES_DB: ${POSTGRES_DB}
@@ -62,9 +62,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=public"
-      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN}`)"
-      - "traefik.http.routers.nextcloud.entrypoints=websecure"
-      - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nextcloud-secure.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud-secure.rule=Host(`${NEXTCLOUD_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-secure.service=nextcloud"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
     networks:
       - internal
