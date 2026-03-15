@@ -1,7 +1,7 @@
 services:
   pihole:
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:2026.02.0
     ports:
       - "53:53/tcp"
       - "53:53/udp"
@@ -12,15 +12,11 @@ services:
       FTLCONF_dns_upstreams: '${PIHOLE_DNS_UPSTREAMS}'
       FTLCONF_webserver_port: '8053,443s'
     volumes:
-      - pihole:/etc/pihole
-      - dnsmasq:/etc/dnsmasq.d
+      - ${PIHOLE_DATA}:/etc/pihole
+      - ${PIHOLE_DNSMASQ_DATA}:/etc/dnsmasq.d
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: '512M'
-
-volumes:
-  pihole:
-  dnsmasq:

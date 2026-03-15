@@ -3,6 +3,8 @@
 - `WEB_PASSWORD`: Password to access the web interface
 - `PIHOLE_PORT`: Port at which the pihole web interface will be running
 - `PIHOLE_DNS_UPSTREAMS`: Comma separated list of DNS servers to use as upstream, e.g. `1.1.1.2,1.0.0.2`
+- `PIHOLE_DATA`: Host path for Pi-hole configuration data, e.g. `/path/to/pihole`
+- `PIHOLE_DNSMASQ_DATA`: Host path for dnsmasq configuration, e.g. `/path/to/dnsmasq`
 
 ## Adlists
 If you have no prior backup of a `pihole` instance, you may want to import the `adlists.list` into the new container, just replace the one inside the `ETC_PIHOLE` folder.
