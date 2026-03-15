@@ -33,7 +33,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=public"
       - "traefik.http.routers.immich-secure.entrypoints=websecure"
-      - "traefik.http.routers.immich-secure.rule=Host(`${IMMICH_HOST}`)"
+      - "traefik.http.routers.immich-secure.rule=Host(`${IMMICH_TRAEFIK_HOST}`)"
       - "traefik.http.routers.immich-secure.service=immich"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
     healthcheck:
@@ -51,8 +51,6 @@ services:
       - model-cache:/cache
     env_file:
       - .env
-    ports:
-      - '2283:2283'
     depends_on:
       - redis
       - database
