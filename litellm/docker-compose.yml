@@ -13,8 +13,6 @@ services:
     command:
      - "--config=/app/config.yml"
     ##############################################
-    ports:
-      - "4000:4000"  # Exposes port 4000 for API access
     environment:
       DATABASE_URL: "postgresql://llmproxy:${POSTGRES_PASSWORD}@db:5432/litellm"
       STORE_MODEL_IN_DB: "True" # allows adding models to proxy via UI
