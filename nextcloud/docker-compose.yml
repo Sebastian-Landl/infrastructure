@@ -52,7 +52,7 @@ services:
       NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
       NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
       
-      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_DOMAIN}
       OVERWRITEPROTOCOL: ${NEXTCLOUD_OVERWRITEPROTOCOL}
 
       PHP_UPLOAD_LIMIT: 100G
@@ -84,7 +84,7 @@ services:
       - db
       - redis
     volumes:
-      - ${NEXTCLOUD_DIR}:/var/www/html
+      - ${NEXTCLOUD_DATA}:/var/www/html
     networks:
       - internal
 
