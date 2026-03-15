@@ -1,19 +1,30 @@
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
 services:
   pihole:
     container_name: pihole
     image: pihole/pihole:2026.02.0
     ports:
+      # DNS Ports
       - "53:53/tcp"
       - "53:53/udp"
-      - "${PIHOLE_PORT}:8053/tcp"
+      # Default HTTP Port
+      - "${PIHOLE_HTTP_PORT}:80/tcp"
+      # Default HTTPs Port. FTL will generate a self-signed certificate
+      # - "${PIHOLE_HTTPS_PORT}:443/tcp"
+      # Uncomment the below if using Pi-hole as your DHCP Server
+      #- "67:67/udp"
+      # Uncomment the line below if you are using Pi-hole as your NTP server
+      #- "123:123/udp"
     environment:
       TZ: ${TIMEZONE}
       FTLCONF_webserver_api_password: '${WEB_PASSWORD}'
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'ALL'
+      FTLCONF_dns_listeningMode: 'ALL'
       FTLCONF_dns_upstreams: '${PIHOLE_DNS_UPSTREAMS}'
-      FTLCONF_webserver_port: '8053,443s'
     volumes:
       - ${PIHOLE_DATA}:/etc/pihole
-      - ${PIHOLE_DNSMASQ_DATA}:/etc/dnsmasq.d
+      # Uncomment the below if you have custom dnsmasq config files that you want to persist. Not needed for most starting fresh with Pi-hole v6. If you're upgrading from v5 you and have used this directory before, you should keep it enabled for the first v6 container start to allow for a complete migration. It can be removed afterwards. Needs environment variable FTLCONF_misc_etc_dnsmasq_d: 'true'
+      #- './etc-dnsmasq.d:/etc/dnsmasq.d'
     restart: unless-stopped
     deploy:
       resources:
