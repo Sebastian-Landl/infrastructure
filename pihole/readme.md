@@ -1,10 +1,11 @@
 ## Environment Variables
 - `TIMEZONE`: Your timezone, e.g. `Europe/Vienna`
 - `WEB_PASSWORD`: Password to access the web interface
-- `PIHOLE_PORT`: Port at which the pihole web interface will be running
-- `PIHOLE_DNS_UPSTREAMS`: Comma separated list of DNS servers to use as upstream, e.g. `1.1.1.2,1.0.0.2`
+- `PIHOLE_HTTP_PORT`: Port at which the pihole web interface will be running
+- `PIHOLE_HTTPS_PORT`: Port at which the pihole web interface will be running (HTTPS)
 - `PIHOLE_DATA`: Host path for Pi-hole configuration data, e.g. `/path/to/pihole`
-- `PIHOLE_DNSMASQ_DATA`: Host path for dnsmasq configuration, e.g. `/path/to/dnsmasq`
+
+Recommended custom dns servers: `1.1.1.2,1.0.0.2` from Cloudflare or Quad9, which also includes malware blocking.
 
 ## Adlists
 If you have no prior backup of a `pihole` instance, you may want to import the `adlists.list` into the new container, just replace the one inside the `ETC_PIHOLE` folder.
@@ -20,10 +21,10 @@ Then edit `/etc/resolv.conf` with `sudo nano /etc/resolv.conf` and replace the l
 ```
 nameserver 127.0.0.53
 ```
-with
+with another valid DNS server like
 ```
-nameserver 127.0.0.1
+nameserver 1.1.1.2
 ```
-which means that instead of using `systemd-resolved` now the `pihole` container will be used for dns resolution. Alternatively you can also specify other addresses here like `1.1.1.1` or `8.8.8.8` if you want to use a different DNS server that works even if the pihole container is not running or crashes.
+which means that instead of using `systemd-resolved` now the `pihole` container will be used for dns resolution. Afer pihole is running, you may change it to `127.0.0.1` to use the pihole container for dns resolution on the host machine as well.
 
-**Be careful when doing this!** This disables the service responsible for DNS resolution on your server, meaning it won't be able to resolve names anymore. That includes the ones required for pulling the pihole docker image. So do that first. Easiest way is to deploy the service without deactivating `systemd-resolved`, seeing the container fail to start, stopping `systemd-resolved` and restarting the container without pulling it again.
+**Be careful when doing this!** This disables the service responsible for DNS resolution on your server, meaning it won't be able to resolve names anymore. Once you edit the `/etc/resolv.conf`, you are good to go again, but be aware of what you are doing.
