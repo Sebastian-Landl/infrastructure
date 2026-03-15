@@ -1,0 +1,85 @@
+services:
+  litellm:
+    build:
+      context: .
+      args:
+        target: runtime
+    image: ghcr.io/berriai/litellm:v1.82.0-stable.patch5
+    restart: unless-stopped
+    #########################################
+    ## Uncomment these lines to start proxy with a config.yml file ##
+    volumes:
+     - ./config.yml:/app/config.yml
+    command:
+     - "--config=/app/config.yml"
+    ##############################################
+    ports:
+      - "4000:4000"  # Exposes port 4000 for API access
+    environment:
+      DATABASE_URL: "postgresql://llmproxy:${POSTGRES_PASSWORD}@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True" # allows adding models to proxy via UI
+      UI_USERNAME: ${UI_USERNAME}
+      UI_PASSWORD: ${UI_PASSWORD}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY} # Recommended to start with sk- prefix, but only because some frameworks expect it, as it matches what OpenAI API keys look like. Can be set to any random string.
+    env_file:
+      - .env # Load local .env file
+    depends_on:
+      - db  # Indicates that this service depends on the 'db' service, ensuring 'db' starts first
+    healthcheck:  # Defines the health check configuration for the container
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"  # Command to execute for health check
+      interval: 30s  # Perform health check every 30 seconds
+      timeout: 10s   # Health check command times out after 10 seconds
+      retries: 3     # Retry up to 3 times if health check fails
+      start_period: 40s  # Wait 40 seconds after container start before beginning health checks
+    networks:
+      - internal
+      - model_backend
+      - public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      - "traefik.http.routers.litellm-secure.entrypoints=websecure"
+      - "traefik.http.routers.litellm-secure.rule=Host(`${LITELLM_TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.litellm-secure.service=litellm"
+      - "traefik.http.services.litellm.loadbalancer.server.port=4000"
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    container_name: litellm_db
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: llmproxy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${POSTGRES_DATA}:/var/lib/postgresql/data # Persists Postgres data across container restarts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+
+  # prometheus:
+  #   image: prom/prometheus:v3.10.0
+  #   volumes:
+  #     - ${PROMETHEUS_DATA}:/prometheus
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
+  #     - "--storage.tsdb.retention.time=15d"
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+
+networks:
+  internal:
+    driver: bridge
+  model_backend:
+    driver: bridge
+  public:
+    external: true

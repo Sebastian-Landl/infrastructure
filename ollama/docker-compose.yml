@@ -12,7 +12,8 @@ services:
     volumes:
       - ${OLLAMA_MODEL_PATH}:/root/.ollama
     restart: unless-stopped
-
+    networks:
+      - model_backend
     deploy:
       resources:
         reservations:
@@ -20,3 +21,7 @@ services:
             - driver: ${GPU_DRIVER:-nvidia}
               count: all
               capabilities: [ gpu ]
+
+networks:
+  model_backend:
+    external: true
