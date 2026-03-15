@@ -1,0 +1,12 @@
+[Unit]
+Description=Glances Monitoring (Web UI)
+After=network.target
+
+[Service]
+ExecStart=/home/YOUR_USER/.local/bin/glances -w --disable-plugin docker
+Restart=on-failure
+User=YOUR_USER
+Environment=HOME=/home/YOUR_USER
+
+[Install]
+WantedBy=multi-user.target
