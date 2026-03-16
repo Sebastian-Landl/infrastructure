@@ -1,10 +1,7 @@
 services:
   litellm:
-    build:
-      context: .
-      args:
-        target: runtime
     image: ghcr.io/berriai/litellm:v1.82.0-stable.patch5
+    container_name: litellm
     restart: unless-stopped
     #########################################
     ## Uncomment these lines to start proxy with a config.yml file ##
