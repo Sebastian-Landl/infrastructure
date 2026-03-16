@@ -31,7 +31,7 @@ model_list:
 
   - model_name: devstral-2
     litellm_params:
-      model: ollama/devstral-2:123b
+      model: ollama/devstral-2-200k:latest
       api_base: http://ollama:11434
 
   - model_name: devstral-small-2
