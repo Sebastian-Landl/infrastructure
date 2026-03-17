@@ -46,7 +46,7 @@ model_list:
 
   - model_name: ministral-3-nano
     litellm_params:
-      model: ollama_chat/ministral-3:3b
+      model: ollama_chat/ministral-3-3b-32k:latest
       api_base: http://ollama:11434
 
   - model_name: gemma3
