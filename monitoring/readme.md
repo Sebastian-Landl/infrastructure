@@ -17,6 +17,8 @@ Prometheus + Grafana with exporters for system and GPU metrics.
 cp .env.example .env
 # Edit .env — set GRAFANA_ADMIN_PASSWORD and data paths
 mkdir -p /opt/monitoring/prometheus /opt/monitoring/grafana
+# Grafana runs as UID 472 — fix ownership before first start
+sudo chown -R 472:472 $GRAFANA_DATA_PATH
 docker compose up -d
 ```
 

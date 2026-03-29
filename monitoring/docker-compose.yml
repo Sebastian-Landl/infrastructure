@@ -25,6 +25,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - ${GRAFANA_DATA_PATH}:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
     networks:
       - monitoring
       - public
