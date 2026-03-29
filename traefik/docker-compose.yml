@@ -12,6 +12,7 @@ services:
       - ${TRAEFIK_YML_PATH}:/etc/traefik/traefik.yml:ro
       - ${TRAEFIK_ACME_PATH}:/acme.json
       - ${TRAEFIK_CONFIGURATIONS_PATH}:/configurations
+      - ${TRAEFIK_LOG_PATH}:/var/log/traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=public"
