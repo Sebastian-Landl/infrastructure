@@ -57,7 +57,7 @@ services:
 
   # Exports per-container CPU, RAM, disk I/O, and network metrics
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.33.0
+    image: google/cadvisor:v0.33.0
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
