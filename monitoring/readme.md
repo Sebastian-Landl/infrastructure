@@ -19,6 +19,8 @@ cp .env.example .env
 mkdir -p /opt/monitoring/prometheus /opt/monitoring/grafana
 # Grafana runs as UID 472 — fix ownership before first start
 sudo chown -R 472:472 $GRAFANA_DATA_PATH
+# Prometheus runs as UID 65534 (nobody) — fix ownership before first start
+sudo chown -R 65534:65534 $PROMETHEUS_DATA_PATH
 docker compose up -d
 ```
 
