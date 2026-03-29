@@ -36,7 +36,18 @@ Requires the NVIDIA Container Toolkit and `nvidia` runtime available on the host
 
 ## Grafana dashboards
 
-Import these from grafana.com after adding Prometheus as a data source (`http://prometheus:9090`):
+### Recommended dashboards
 
-- **Node Exporter Full** — ID `1860` (CPU, RAM, disk, network)
-- **DCGM Exporter** — ID `12239` (NVIDIA GPU)
+| Dashboard | ID | Description |
+|---|---|---|
+| [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/) | `1860` | Host CPU, RAM, disk, network |
+| [NVIDIA DCGM Dashboard](https://grafana.com/grafana/dashboards/22515-nvidia-dcgm-dashboard/) | `22515` | NVIDIA GPU metrics (MIG, NVLink, memory BW, SM util) |
+| [cAdvisor Dashboard](https://grafana.com/grafana/dashboards/19792-cadvisor-dashboard/) | `19792` | Per-container CPU, RAM, disk I/O, network |
+
+### How to import a dashboard
+
+1. Open Grafana in your browser and log in.
+   > Prometheus is already provisioned as the default data source via `provisioning/datasources/prometheus.yml` — no manual setup needed.
+2. Go to **Dashboards → New → Import**
+3. Enter the dashboard ID (e.g. `1860`) and click **Load**
+4. Select your Prometheus data source from the dropdown and click **Import**

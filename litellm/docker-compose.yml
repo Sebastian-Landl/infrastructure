@@ -32,6 +32,7 @@ services:
       - internal
       - model_backend
       - public
+      - monitoring
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=public"
@@ -58,23 +59,12 @@ services:
     networks:
       - internal
 
-  # prometheus:
-  #   image: prom/prometheus:v3.10.0
-  #   volumes:
-  #     - ${PROMETHEUS_DATA}:/prometheus
-  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #     - "--storage.tsdb.path=/prometheus"
-  #     - "--storage.tsdb.retention.time=15d"
-  #   restart: unless-stopped
-  #   networks:
-  #     - internal
-
 networks:
   internal:
     driver: bridge
   model_backend:
     driver: bridge
   public:
+    external: true
+  monitoring:
     external: true
