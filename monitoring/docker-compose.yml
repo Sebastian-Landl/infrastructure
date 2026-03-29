@@ -78,12 +78,18 @@ services:
   dcgm-exporter:
     image: nvcr.io/nvidia/k8s/dcgm-exporter:4.5.2-4.8.1-ubuntu22.04
     container_name: dcgm_exporter
-    runtime: nvidia
     restart: unless-stopped
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     cap_add:
       - SYS_ADMIN
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: ${GPU_DRIVER:-nvidia}
+              count: all
+              capabilities: [ gpu ]
     networks:
       - monitoring
 
