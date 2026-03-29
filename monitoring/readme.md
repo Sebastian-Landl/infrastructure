@@ -21,6 +21,8 @@ mkdir -p /opt/monitoring/prometheus /opt/monitoring/grafana
 sudo chown -R 472:472 $GRAFANA_DATA_PATH
 # Prometheus runs as UID 65534 (nobody) — fix ownership before first start
 sudo chown -R 65534:65534 $PROMETHEUS_DATA_PATH
+# Create the shared monitoring network (once per host)
+docker network create monitoring
 docker compose up -d
 ```
 
