@@ -45,6 +45,7 @@ Requires the NVIDIA Container Toolkit and `nvidia` runtime available on the host
 | [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/) | `1860` | Host CPU, RAM, disk, network |
 | [NVIDIA DCGM Dashboard](https://grafana.com/grafana/dashboards/22515-nvidia-dcgm-dashboard/) | `22515` | NVIDIA GPU metrics (MIG, NVLink, memory BW, SM util) |
 | [cAdvisor Dashboard](https://grafana.com/grafana/dashboards/19792-cadvisor-dashboard/) | `19792` | Per-container CPU, RAM, disk I/O, network |
+| [LiteLLM](https://grafana.com/grafana/dashboards/24965-litellm/) | `24965` | LiteLLM model usage |
 
 ### How to import a dashboard
 
