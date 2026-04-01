@@ -19,4 +19,5 @@ password='<authetication_token>'
 ```
 
 ## Checking if it works
-With the command `sudo ddclient -daemon=0 -debug -verbose -noquiet -file config/ddclient.conf` you can check whether your configuration works. If it works, then for each (sub)domain you configured, you should see one line starting with `SUCCESS:` at the end of the output.
+Updon starting the container, the configured domains should be updated. You can check the logs of the container (`docker logs ddclient`) and see a line with SUCCESS for each configured domain.
+With the command `ddclient -daemon=0 -debug -verbose -noquiet -file config/ddclient.conf` you can try testing it manually, but beware that the output may not be reliable.
