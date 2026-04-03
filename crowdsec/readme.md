@@ -77,3 +77,24 @@ Get your enroll key at https://app.crowdsec.net
 docker exec crowdsec cscli hub update
 docker exec crowdsec cscli collections upgrade crowdsecurity/traefik
 ```
+
+## Cheatsheet
+
+### View Bans
+ 
+```bash
+cscli decisions list                    # all decisions
+cscli decisions list --type ban         # bans only
+cscli decisions list --ip 203.0.113.42  # specific IP
+cscli decisions list -o json | jq       # JSON output
+```
+ 
+### Delete a Ban
+ 
+```bash
+cscli decisions delete --ip 203.0.113.42
+cscli decisions delete --range 203.0.113.0/24
+```
+ 
+### Custom Whitelist
+Adapt the `whitelists-custom.yaml` file to add IPs or ranges you want to ensure are never blocked, then restart the container to apply.
