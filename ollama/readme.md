@@ -17,6 +17,18 @@ For managing the LLMs available to the container, I pull the required images at 
 ## litellm_model_backend network
 This network is declared in the litellm docker-compose.yml and is used to allow the ollama container to communicate with the litellm proxy container, without exposing the ollama container to the public network. The litellm proxy can then route requests to the ollama container when a request is made to the corresponding model.
 
+## Multi-user
+With `OLLAMA_NUM_PARALLEL` you can allow ollama to server multiple users the same model in parallel. The cost is, that the required context is pre-allocated per user. So any bigger model will simply not allow to server multiple users in parallel. I'd recommend using a custom modelfile for the models that can serve multiple users (small ones and nemotron models).
+
+```
+FROM nemotron-mini-4b-instruct
+
+PARAMETER num_ctx 8192
+PARAMETER num_parallel 4
+```
+
+For more instructions see the next section.
+
 ## Per-Model Context Length Override
 
 When `OLLAMA_CONTEXT_LENGTH` is set globally (e.g. `262144`), individual models can override it via a **Modelfile**. The `num_ctx` parameter set in a Modelfile takes precedence over the environment variable.
