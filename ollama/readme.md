@@ -14,6 +14,18 @@ For managing the LLMs available to the container, I pull the required images at 
 - `docker exec -it <container_id> /bin/bash` to get a bash inside the container
 - `ollama pull <model>` to pull the actual model
 
+## Updating Models
+
+A helper script is included and mounted into the container at `/ollama-update-models.sh`. It pulls every currently installed model to check for and apply updates.
+
+Run it inside the container:
+
+```bash
+docker exec -it ollama /ollama-update-models.sh
+```
+
+The script will iterate through all models returned by `ollama list`, pull each one, and print a summary of successful and failed updates. It exits with code `1` if any model fails to update.
+
 ## litellm_model_backend network
 This network is declared in the litellm docker-compose.yml and is used to allow the ollama container to communicate with the litellm proxy container, without exposing the ollama container to the public network. The litellm proxy can then route requests to the ollama container when a request is made to the corresponding model.
 
