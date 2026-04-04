@@ -7,7 +7,7 @@ services:
       [
         "--servers=youtube_transcript",
         "--transport=streaming",
-        "--port=8000",
+        "--port=${MCP_GATEWAY_PORT}",
       ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -22,7 +22,7 @@ services:
       [
         "--servers=fetch,duckduckgo,playwright,wikipedia-mcp",
         "--transport=streaming",
-        "--port=8001",
+        "--port=${MCP_GATEWAY_PORT}",
       ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -37,7 +37,7 @@ services:
       [
         "--servers=node-code-sandbox",
         "--transport=streaming",
-        "--port=8002",
+        "--port=${MCP_GATEWAY_PORT}",
       ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
