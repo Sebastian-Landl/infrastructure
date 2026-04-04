@@ -1,3 +1,8 @@
+# Create the external Docker network (required before first run)
+docker network create public
+
+---
+
 # Create the hash for basic http authentication
 docker run --rm -it httpd:2.4-alpine htpasswd -nB <username>
 
