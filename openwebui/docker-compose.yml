@@ -1,32 +1,71 @@
+x-openwebui-common: &openwebui-common
+  container_name: openwebui
+  restart: unless-stopped
+  env_file:
+    - .env
+  environment:
+    - WEBUI_URL=${WEBUI_URL}
+    - ENABLE_SIGNUP=${ENABLE_SIGNUP:-false}
+    - WEBUI_ADMIN_EMAIL=${WEBUI_ADMIN_EMAIL}
+    - WEBUI_ADMIN_PASSWORD=${WEBUI_ADMIN_PASSWORD}
+    - WEBUI_ADMIN_NAME=${WEBUI_ADMIN_NAME:-Admin}
+    - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+    - ENABLE_PERSISTENT_CONFIG=${ENABLE_PERSISTENT_CONFIG:-true}
+    - CORS_ALLOW_ORIGIN=${WEBUI_URL}
+    - WEBUI_SESSION_COOKIE_SECURE=${WEBUI_SESSION_COOKIE_SECURE}
+    - WEBUI_AUTH_COOKIE_SECURE=${WEBUI_AUTH_COOKIE_SECURE}
+    - WEBUI_SESSION_COOKIE_SAME_SITE=${WEBUI_SESSION_COOKIE_SAME_SITE:-lax}
+    - WEBUI_AUTH_COOKIE_SAME_SITE=${WEBUI_AUTH_COOKIE_SAME_SITE:-lax}
+    - ENABLE_OPENAI_API=${ENABLE_OPENAI_API}
+    - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL}
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - ENABLE_OLLAMA_API=${ENABLE_OLLAMA_API}
+    - DEFAULT_MODELS=${DEFAULT_MODELS}
+    - DEFAULT_USER_ROLE=${DEFAULT_USER_ROLE:-pending}
+    - ENABLE_FORWARD_USER_INFO_HEADERS=${ENABLE_FORWARD_USER_INFO_HEADERS:-false}
+    - ENABLE_COMMUNITY_SHARING=${ENABLE_COMMUNITY_SHARING:-false}
+    - ENABLE_VERSION_UPDATE_CHECK=${ENABLE_VERSION_UPDATE_CHECK:-false}
+    - ENABLE_RAG_LOCAL_WEB_FETCH=${ENABLE_RAG_LOCAL_WEB_FETCH:-false}
+    - ENABLE_WEB_SEARCH=${ENABLE_WEB_SEARCH:-false}
+    - WEB_SEARCH_ENGINE=${WEB_SEARCH_ENGINE:-duckduckgo}
+    - WEB_SEARCH_RESULT_COUNT=${WEB_SEARCH_RESULT_COUNT:-5}
+    - WEB_SEARCH_CONCURRENT_REQUESTS=${WEB_SEARCH_CONCURRENT_REQUESTS:-1}
+    - WEB_LOADER_CONCURRENT_REQUESTS=${WEB_LOADER_CONCURRENT_REQUESTS:-5}
+  volumes:
+    - ${OPENWEBUI_DATA_PATH}:/app/backend/data
+  networks:
+    - public
+    - mcp
+  labels:
+    - "traefik.enable=true"
+    - "traefik.docker.network=public"
+    - "traefik.http.routers.openwebui-secure.entrypoints=websecure"
+    - "traefik.http.routers.openwebui-secure.rule=Host(`${OPENWEBUI_TRAEFIK_DOMAIN}`)"
+    - "traefik.http.routers.openwebui-secure.service=openwebui"
+    - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
+
 services:
   open-webui:
-    image: ghcr.io/open-webui/open-webui:cuda
-    container_name: open-webui
-    ports:
-      - "${OPENWEBUI_PORT}:8080"
-    environment:
-      - ENABLE_SIGNUP=true
-      - CORS_ALLOW_ORIGIN=${CORS_ALLOW_ORIGIN}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
-      - RAG_OLLAMA_BASE_URL=${RAG_OLLAMA_BASE_URL}
-      - RAG_EMBEDDING_ENGINE=${RAG_EMBEDDING_ENGINE}
-      - RAG_EMBEDDING_MODEL=${RAG_EMBEDDING_MODEL}
-      - ENABLE_RAG_WEB_SEARCH=${ENABLE_RAG_WEB_SEARCH}
-      - RAG_WEB_SEARCH_ENGINE=${RAG_WEB_SEARCH_ENGINE}
-      - RAG_WEB_SEARCH_RESULT_COUNT=${RAG_WEB_SEARCH_RESULT_COUNT}
-    restart: unless-stopped
-    volumes:
-      - open-webui:/app/backend/data
-    extra_hosts:
-      - "host.docker.internal:host-gateway" # Add host.docker.internal for accessing the host machine
+    <<: *openwebui-common
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}
+    profiles:
+      - cpu
+
+  open-webui-gpu:
+    <<: *openwebui-common
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION}-cuda
+    profiles:
+      - gpu
     deploy:
       resources:
         reservations:
           devices:
-            - driver: nvidia
+            - driver: ${GPU_DRIVER:-nvidia}
               count: all
-              capabilities: [ gpu ]
+              capabilities: [gpu]
 
-
-volumes:
-  open-webui:
+networks:
+  public:
+    external: true
+  mcp:
+    external: true

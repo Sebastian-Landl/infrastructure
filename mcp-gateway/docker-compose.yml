@@ -1,0 +1,49 @@
+services:
+  mcp-gateway-youtube:
+    image: docker/mcp-gateway:${VERSION}
+    container_name: mcp-gateway-youtube
+    restart: unless-stopped
+    command:
+      [
+        "--servers=youtube_transcript",
+        "--transport=streaming",
+        "--port=8000",
+      ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mcp
+
+mcp-gateway-web:
+  image: docker/mcp-gateway:${VERSION}
+  container_name: mcp-gateway-web
+  restart: unless-stopped
+  command:
+    [
+      "--servers=fetch,duckduckgo,playwright,wikipedia-mcp",
+      "--transport=streaming",
+      "--port=8001",
+    ]
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  networks:
+    - mcp
+
+mcp-gateway-code-execution:
+  image: docker/mcp-gateway:${VERSION}
+  container_name: mcp-gateway-code-execution
+  restart: unless-stopped
+  command:
+    [
+      "--servers=node-code-sandbox",
+      "--transport=streaming",
+      "--port=8002",
+    ]
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  networks:
+    - mcp
+
+networks:
+  mcp:
+    external: true

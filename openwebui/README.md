@@ -1,16 +1,52 @@
-## Setup
-Create the admin account when you first log in. Then disable account creation in the settings if you want to prevent others from creating accounts and create additional accounts manually only through the admin account.
+## Overview
+This stack uses one compose file with:
 
-## Environment Variables
-- `OPENWEBUI_PORT`: Port at which the openwebui will be running
-- `OLLAMA_BASE_URL`: `http://host.docker.internal:11434`, if you are running ollama on the docker host on the default ollama port, otherwise simply the base url of the ollama service
-#### Additional variables for RAG (not thoroughly tested)
-- `RAG_OLLAMA_BASE_URL`: Could be the same as above
-- `RAG_EMBEDDING_ENGINE`: e.g. `ollama`
-- `RAG_EMBEDDING_MODEL`: e.g. `bge-m3:567m-fp16`
-- `ENABLE_RAG_WEB_SEARCH`: `True` or `False`
-- `RAG_WEB_SEARCH_ENGINE`: desired search engine, e.g. `duckduckgo`
-- `RAG_WEB_SEARCH_RESULT_COUNT`: Number of desired web search results, e.g. `10`
-- `CORS_ALLOW_ORIGIN`: `*` or better the desired origin
+1. Profile-based CPU/GPU startup.
+2. Traefik HTTPS routing on the external `public` network.
+3. OpenAI API-compatible backend configured via env.
+4. Data persistence via env-driven bind mount path.
 
-https://docs.openwebui.com/getting-started/env-configuration/
+## Start Modes
+The compose file defines two profiles:
+
+1. `cpu`: no GPU reservation.
+2. `gpu`: includes NVIDIA GPU reservation.
+
+Choose one profile in `.env` via `COMPOSE_PROFILES`, then run:
+
+```bash
+docker compose up -d
+```
+
+Or explicitly:
+
+```bash
+docker compose --profile cpu up -d
+docker compose --profile gpu up -d
+```
+
+The recommended place to review and edit variables is [openwebui/.env.example](openwebui/.env.example).
+
+## Networking and Routing
+OpenWebUI is published through Traefik using:
+
+1. `OPENWEBUI_TRAEFIK_DOMAIN` for host rule routing.
+2. Internal service port `8080` (no host port mapping — traffic goes through Traefik only).
+3. Connected to two external networks: `public` (Traefik) and `mcp` (MCP gateway).
+
+## Persistence
+Data is persisted with a bind mount:
+
+1. `OPENWEBUI_DATA_PATH:/app/backend/data`
+
+Set `OPENWEBUI_DATA_PATH` in `.env`.
+
+## Notes
+1. `CORS_ALLOW_ORIGIN` is currently derived from `WEBUI_URL` in compose.
+2. Admin auto-creation only happens on fresh data and when both admin email and password are set.
+3. `ENABLE_PERSISTENT_CONFIG=true` means many settings can be overridden by values previously saved in OpenWebUI. If env changes seem ignored, check persisted settings in the UI/database.
+4. `ENABLE_RAG_LOCAL_WEB_FETCH=false` is a security-focused default (SSRF protection for private/local addresses).
+
+Reference docs:
+
+- https://docs.openwebui.com/reference/env-configuration/
