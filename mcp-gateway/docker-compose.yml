@@ -14,35 +14,35 @@ services:
     networks:
       - mcp
 
-mcp-gateway-web:
-  image: docker/mcp-gateway:${VERSION}
-  container_name: mcp-gateway-web
-  restart: unless-stopped
-  command:
-    [
-      "--servers=fetch,duckduckgo,playwright,wikipedia-mcp",
-      "--transport=streaming",
-      "--port=8001",
-    ]
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-  networks:
-    - mcp
+  mcp-gateway-web:
+    image: docker/mcp-gateway:${VERSION}
+    container_name: mcp-gateway-web
+    restart: unless-stopped
+    command:
+      [
+        "--servers=fetch,duckduckgo,playwright,wikipedia-mcp",
+        "--transport=streaming",
+        "--port=8001",
+      ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mcp
 
-mcp-gateway-code-execution:
-  image: docker/mcp-gateway:${VERSION}
-  container_name: mcp-gateway-code-execution
-  restart: unless-stopped
-  command:
-    [
-      "--servers=node-code-sandbox",
-      "--transport=streaming",
-      "--port=8002",
-    ]
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-  networks:
-    - mcp
+  mcp-gateway-code-execution:
+    image: docker/mcp-gateway:${VERSION}
+    container_name: mcp-gateway-code-execution
+    restart: unless-stopped
+    command:
+      [
+        "--servers=node-code-sandbox",
+        "--transport=streaming",
+        "--port=8002",
+      ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mcp
 
 networks:
   mcp:
