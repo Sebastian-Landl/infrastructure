@@ -20,7 +20,22 @@ services:
     restart: unless-stopped
     command:
       [
-        "--servers=fetch,duckduckgo,playwright,wikipedia-mcp",
+        "--servers=fetch,duckduckgo,playwright",
+        "--transport=streaming",
+        "--port=${MCP_GATEWAY_PORT}",
+      ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mcp
+
+  mcp-gateway-wikipedia:
+    image: docker/mcp-gateway:${VERSION}
+    container_name: mcp-gateway-wikipedia
+    restart: unless-stopped
+    command:
+      [
+        "--servers=wikipedia-mcp",
         "--transport=streaming",
         "--port=${MCP_GATEWAY_PORT}",
       ]
