@@ -2,7 +2,6 @@ services:
   vllm:
     image: ${VLLM_IMAGE:-vllm/vllm-openai:nightly}
     container_name: ${CONTAINER_NAME:-vllm}
-    runtime: nvidia
     ipc: host
     ulimits:
       memlock: -1
