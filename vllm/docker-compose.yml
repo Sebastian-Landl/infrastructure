@@ -18,7 +18,7 @@ services:
     ports:
       - "${VLLM_PORT:-8000}:${VLLM_PORT:-8000}"
     command: >
-      --model ${VLLM_MODEL:-nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4}
+      ${VLLM_MODEL:-nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4}
       --served-model-name ${VLLM_SERVED_MODEL_NAME:-nemotron-3-super}
       --host 0.0.0.0
       --port ${VLLM_PORT:-8000}
@@ -33,9 +33,9 @@ services:
       --max-num-seqs ${VLLM_MAX_NUM_SEQS:-4}
       --max-model-len ${VLLM_MAX_MODEL_LEN:-262144}
       --moe-backend marlin
-      --mamba_ssm_cache_dtype ${MAMBA_SSM_CACHE_DTYPE:-float32}
+      --mamba-ssm-cache-dtype ${MAMBA_SSM_CACHE_DTYPE:-float32}
       --quantization fp4
-      --speculative_config ${SPECULATIVE_CONFIG:-{"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}}
+      --speculative-config {"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}
       --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/super_v3_reasoning_parser.py}
       --reasoning-parser ${VLLM_REASONING_PARSER:-super_v3}
       --enable-auto-tool-choice
