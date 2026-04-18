@@ -35,7 +35,7 @@ services:
       --moe-backend marlin
       --mamba-ssm-cache-dtype ${MAMBA_SSM_CACHE_DTYPE:-float32}
       --quantization fp4
-      --speculative-config {"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}
+      --speculative-config '{"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}'
       --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/super_v3_reasoning_parser.py}
       --reasoning-parser ${VLLM_REASONING_PARSER:-super_v3}
       --enable-auto-tool-choice
