@@ -27,7 +27,6 @@ services:
           --reasoning-parser ${VLLM_REASONING_PARSER:-nano_v3}
           --enable-auto-tool-choice
           --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
-          --VLLM_NVFP4_GEMM_BACKEND=marlin
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
       - ./reasoning_parsers:/app/reasoning_parsers
