@@ -13,14 +13,21 @@ services:
       - VLLM_NVFP4_GEMM_BACKEND=marlin
       - VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
       - VLLM_FLASHINFER_ALLREDUCE_BACKEND=trtllm
-      - VLLM_USE_FLASHINFER_MOE_FP4=0
+      - VLLM_USE_FLASHINFER_MOE_FP4=1
+      - VLLM_FLASHINFER_MOE_BACKEND=throughput
+      - VLLM_ALLOW_LONG_MAX_MODEL_LEN=${VLLM_ALLOW_LONG_MAX_MODEL_LEN:-0}
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
-      - ./super_v3_reasoning_parser.py:/app/super_v3_reasoning_parser.py
+      - ./reasoning_parsers:/app/reasoning_parsers
     ports:
-      - "8000:8000"
+      - "${VLLM_PORT:-8000}:${VLLM_PORT:-8000}"
     command: >
-      --model ${VLLM_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-NVFP4}
+      vllm serve
+      ${VLLM_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-NVFP4}
+      --served-model-name ${VLLM_SERVED_MODEL_NAME:-nemotron-3-nano}
+      --host 0.0.0.0
+      --port ${VLLM_PORT:-8000}
+      --tensor-parallel-size 1
       --async-scheduling
       --dtype auto
       --swap-space 0
@@ -31,7 +38,8 @@ services:
       --gpu-memory-utilization ${VLLM_GPU_MEMORY_UTILIZATION:-0.80}
       --kv-cache-dtype ${VLLM_KV_CACHE_DTYPE:-fp8}
       --trust-remote-code
-      --reasoning-parser nemotron_v3
+      --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/nano_v3_reasoning_parser.py}
+      --reasoning-parser ${VLLM_REASONING_PARSER:-nano_v3}
       --enable-auto-tool-choice
       --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
     restart: unless-stopped

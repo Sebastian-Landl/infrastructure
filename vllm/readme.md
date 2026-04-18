@@ -17,3 +17,6 @@ uvx hf cache ls
 ```
 
 In this case we'd mount the normal huggingface cache directory (`~/.cache/huggingface`) into the container at the same location, so the container can find the downloaded models.
+
+## Reasoning parsers
+The reasoning parsers are custom plugins for vLLM that enable advanced reasoning capabilities. You can find them in the `reasoning_parsers` directory. To use a specific reasoning parser, set the `VLLM_REASONING_PARSER_PLUGIN` environment variable to the path of the desired parser plugin within the container (e.g., `/app/reasoning_parsers/nano_v3_reasoning_parser.py`) and set the `VLLM_REASONING_PARSER` variable to the corresponding parser name (e.g., `nano_v3`).
