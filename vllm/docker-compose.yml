@@ -11,10 +11,10 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - HF_HOME=/root/.cache/huggingface
-      - VLLM_NVFP4_GEMM_BACKEND=marlin
+      - VLLM_NVFP4_GEMM_BACKEND=cutlass
       - VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
       - VLLM_FLASHINFER_ALLREDUCE_BACKEND=trtllm
-      - VLLM_USE_FLASHINFER_MOE_FP4=0
+      - VLLM_USE_FLASHINFER_MOE_FP4=1
       - VLLM_FLASHINFER_MOE_BACKEND=throughput
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
@@ -36,7 +36,6 @@ services:
       --trust-remote-code
       --enable-chunked-prefill
       --max-cudagraph-capture-size 128
-      --async-scheduling
       --mamba-ssm-cache-dtype float16
       --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/nano_v3_reasoning_parser.py}
       --reasoning-parser ${VLLM_REASONING_PARSER:-nano_v3}
