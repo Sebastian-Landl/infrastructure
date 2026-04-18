@@ -1,7 +1,8 @@
 # Image
 
-- DGX Spark: [avarok/dgx-vllm-nvfp4-kernel:v23](https://hub.docker.com/layers/avarok/dgx-vllm-nvfp4-kernel/v23/images/sha256-365447a3b5a172e96c50e69f761a15e45fff2a7487f46172a84a4cf806f25f5d)
-- Other: vllm/vllm-openai:nightly
+DGX Spark: [avarok/dgx-vllm-nvfp4-kernel:v23](https://hub.docker.com/layers/avarok/dgx-vllm-nvfp4-kernel/v23/images/sha256-365447a3b5a172e96c50e69f761a15e45fff2a7487f46172a84a4cf806f25f5d)
+
+The docker compose works with the avarok image for the DGX spark.
 
 # Download nvfp4 models from huggingface
 The tensorrt container does that by itself, but for time saving you may want to pre-download them on the host and mount them in. Example:

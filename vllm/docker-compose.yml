@@ -1,47 +1,38 @@
 services:
   vllm:
-    image: ${VLLM_IMAGE:-vllm/vllm-openai:nightly}
+    image: avarok/dgx-vllm-nvfp4-kernel:v23
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
     ulimits:
       memlock: -1
       stack: 67108864
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - HF_HOME=/root/.cache/huggingface
       - MODEL=${VLLM_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-NVFP4}
-      - VLLM_NVFP4_GEMM_BACKEND=marlin
-      - VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
-      - VLLM_FLASHINFER_ALLREDUCE_BACKEND=trtllm
-      - VLLM_USE_FLASHINFER_MOE_FP4=1
-      - VLLM_FLASHINFER_MOE_BACKEND=throughput
-      - VLLM_ALLOW_LONG_MAX_MODEL_LEN=${VLLM_ALLOW_LONG_MAX_MODEL_LEN:-0}
+      - PORT=${VLLM_PORT:-8000}
+      - HOST=0.0.0.0
+      - TENSOR_PARALLEL_SIZE=1
+      - MAX_MODEL_LEN=${VLLM_MAX_MODEL_LEN:-262144}
+      - GPU_MEMORY_UTIL=${VLLM_GPU_MEMORY_UTILIZATION:-0.80}
+      - MAX_NUM_SEQS=128
+      - VLLM_EXTRA_ARGS=--served-model-name ${VLLM_SERVED_MODEL_NAME:-nemotron-3-nano}
+          --dtype auto
+          --swap-space 0
+          --kv-cache-dtype ${VLLM_KV_CACHE_DTYPE:-fp8}
+          --trust-remote-code
+          --enable-chunked-prefill
+          --max-cudagraph-capture-size 128
+          --async-scheduling
+          --mamba-ssm-cache-dtype float16
+          --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/nano_v3_reasoning_parser.py}
+          --reasoning-parser ${VLLM_REASONING_PARSER:-nano_v3}
+          --enable-auto-tool-choice
+          --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
+          --VLLM_NVFP4_GEMM_BACKEND=marlin
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
       - ./reasoning_parsers:/app/reasoning_parsers
     ports:
       - "${VLLM_PORT:-8000}:${VLLM_PORT:-8000}"
-    command: >
-      serve
-      --served-model-name ${VLLM_SERVED_MODEL_NAME:-nemotron-3-nano}
-      --host 0.0.0.0
-      --port ${VLLM_PORT:-8000}
-      --tensor-parallel-size 1
-      --async-scheduling
-      --dtype auto
-      --swap-space 0
-      --max-cudagraph-capture-size 128
-      --enable-chunked-prefill
-      --mamba-ssm-cache-dtype float16
-      --max-model-len ${VLLM_MAX_MODEL_LEN:-262144}
-      --gpu-memory-utilization ${VLLM_GPU_MEMORY_UTILIZATION:-0.80}
-      --kv-cache-dtype ${VLLM_KV_CACHE_DTYPE:-fp8}
-      --trust-remote-code
-      --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN:-/app/reasoning_parsers/nano_v3_reasoning_parser.py}
-      --reasoning-parser ${VLLM_REASONING_PARSER:-nano_v3}
-      --enable-auto-tool-choice
-      --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
     restart: unless-stopped
     deploy:
       resources:
