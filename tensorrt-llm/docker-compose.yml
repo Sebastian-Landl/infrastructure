@@ -24,10 +24,13 @@ services:
       - --
     command:
       - "${MODEL_HANDLE}"
-      - "--max_batch_size ${MAX_BATCH_SIZE:-64}"
+      - "--max_batch_size"
+      - "${MAX_BATCH_SIZE:-64}"
       - "--trust_remote_code"
-      - "--port ${PORT:-8000}"
-      - "--extra_llm_api_options ${MODEL_CONFIG_FILE:-/model_configs/default.yml}"
+      - "--port"
+      - "${PORT:-8000}"
+      - "--extra_llm_api_options"
+      - "${MODEL_CONFIG_FILE:-/model_configs/default.yml}"
     deploy:
       resources:
         reservations:
