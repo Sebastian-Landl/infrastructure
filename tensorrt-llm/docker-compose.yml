@@ -29,6 +29,8 @@ services:
       - "--trust_remote_code"
       - "--port"
       - "${PORT:-8000}"
+      - "--host"
+      - "0.0.0.0"
       - "--extra_llm_api_options"
       - "${MODEL_CONFIG_FILE:-/model_configs/default.yml}"
     deploy:
