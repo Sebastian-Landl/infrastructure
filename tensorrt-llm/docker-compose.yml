@@ -15,7 +15,13 @@ services:
       - ${TIKTOKEN_ENCODINGS_DIR:-./tiktoken_encodings}:/tiktoken_encodings:ro
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
-    entrypoint: ["trtllm-serve"]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        echo "/usr/local/tensorrt/lib" > /etc/ld.so.conf.d/tensorrt.conf && ldconfig
+        exec trtllm-serve "$@"
+      - --
     command:
       - "${MODEL_HANDLE}"
       - "--max_batch_size ${MAX_BATCH_SIZE:-64}"
