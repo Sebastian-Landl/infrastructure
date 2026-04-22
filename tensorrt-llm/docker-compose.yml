@@ -12,7 +12,6 @@ services:
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
       - ./model_configs:/model_configs:ro
-      - ./server_config.yml:/server_config.yml:ro
       - ${TIKTOKEN_ENCODINGS_DIR:-./tiktoken_encodings}:/tiktoken_encodings:ro
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
@@ -24,18 +23,22 @@ services:
         exec trtllm-serve "$@"
       - --
     command:
+      - "serve"
       - "${MODEL_HANDLE}"
       - "--max_batch_size"
       - "${MAX_BATCH_SIZE:-64}"
       - "--trust_remote_code"
+      - "--no-telemetry"
       - "--port"
       - "${PORT:-8000}"
       - "--host"
       - "0.0.0.0"
       - "--extra_llm_api_options"
       - "${MODEL_CONFIG_FILE:-/model_configs/default.yml}"
-      - "--config"
-      - "/server_config.yml"
+      - "--reasoning_parser"
+      - "auto"
+      - "--tool_parser"
+      - "auto"
     deploy:
       resources:
         reservations:
