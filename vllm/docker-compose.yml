@@ -1,6 +1,6 @@
 services:
   vllm:
-    image: avarok/dgx-vllm-nvfp4-kernel:v23
+    image: vllm/vllm-openai:v0.19.1-cu130
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
     ulimits:
