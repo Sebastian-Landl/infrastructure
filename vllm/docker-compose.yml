@@ -47,7 +47,7 @@ services:
           ${VLLM_QUANTIZATION_FLAG} \
           ${VLLM_ASYNC_SCHEDULING_FLAG} \
           ${VLLM_CUDAGRAPH_FLAG} \
-          --speculative_config '{"method":"mtp","num_speculative_tokens":3,"moe_backend":"triton"}' \
+          ${VLLM_SPECULATIVE_CONFIG_FLAG} \
           --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN} \
           --reasoning-parser ${VLLM_REASONING_PARSER} \
           --enable-auto-tool-choice \
