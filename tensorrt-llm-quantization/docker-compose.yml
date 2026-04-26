@@ -16,11 +16,7 @@ services:
       bash -c "
         git clone -b ${MODEL_OPTIMIZER_VERSION} --single-branch https://github.com/NVIDIA/Model-Optimizer.git /app/TensorRT-Model-Optimizer &&
         cd /app/TensorRT-Model-Optimizer && pip install -e '.[dev]' &&
-        /app/TensorRT-Model-Optimizer/examples/llm_ptq/scripts/huggingface_example.sh
-          --model \"${MODEL}\"
-          --quant \"${QUANT:-nvfp4}\"
-          --tp \"${TP:-1}\"
-          --export_fmt \"${EXPORT_FMT:-hf}\"
+        /app/TensorRT-Model-Optimizer/examples/llm_ptq/scripts/huggingface_example.sh --model \"${MODEL}\" --quant \"${QUANT:-nvfp4}\" --tp \"${TP:-1}\" --export_fmt \"${EXPORT_FMT:-hf}\"
       "
     deploy:
       resources:
