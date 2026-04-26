@@ -1,0 +1,30 @@
+services:
+  quantization:
+    image: nvcr.io/nvidia/tensorrt-llm/release:1.3.0rc12
+    ipc: host
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    volumes:
+      - ${OUTPUT_MODELS_PATH}:/workspace/output_models
+      - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - ROOT_SAVE_PATH=/workspace/output_models
+    command: >
+      bash -c "
+        git clone -b ${MODEL_OPTIMIZER_VERSION} --single-branch https://github.com/NVIDIA/Model-Optimizer.git /app/TensorRT-Model-Optimizer &&
+        cd /app/TensorRT-Model-Optimizer && pip install -e '.[dev]' &&
+        /app/TensorRT-Model-Optimizer/examples/llm_ptq/scripts/huggingface_example.sh
+          --model \"${MODEL}\"
+          --quant \"${QUANT:-nvfp4}\"
+          --tp \"${TP:-1}\"
+          --export_fmt \"${EXPORT_FMT:-hf}\"
+      "
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
