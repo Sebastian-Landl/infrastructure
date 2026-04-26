@@ -157,6 +157,7 @@ model_list:
     litellm_params:
       model: openai/tensorrt
       api_base: http://tensorrt-llm:8000
+      api_key: api-key
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
