@@ -156,7 +156,7 @@ model_list:
   - model_name: tensorrt
     litellm_params:
       model: openai/tensorrt
-      api_base: http://tensorrt-llm:8000
+      api_base: http://tensorrt-llm:8000/v1
       api_key: api-key
 
 general_settings:
