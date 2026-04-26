@@ -1,6 +1,7 @@
 services:
   quantization:
     image: nvcr.io/nvidia/tensorrt-llm/release:1.3.0rc12
+    container_name: tensorrt-llm-quantization
     ipc: host
     ulimits:
       memlock: -1
