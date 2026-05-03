@@ -1,6 +1,6 @@
 services:
   vllm:
-    image: vllm/vllm-openai:v0.19.1-cu130
+    image: vllm/vllm-openai:v0.20.0-cu130
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
     ulimits:
@@ -17,6 +17,12 @@ services:
       - VLLM_MARLIN_USE_ATOMIC_ADD=1
       - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
       - HF_TOKEN=${HF_TOKEN:-}
+      # --- multimodal (Omni) --- set in .env.nano-omni, empty for text-only models
+      - VLLM_VIDEO_PRUNING_FLAG=${VLLM_VIDEO_PRUNING_FLAG:-}
+      - VLLM_MEDIA_IO_KWARGS_FLAG=${VLLM_MEDIA_IO_KWARGS_FLAG:-}
+      - VLLM_ALLOWED_LOCAL_MEDIA_FLAG=${VLLM_ALLOWED_LOCAL_MEDIA_FLAG:-}
+      - VLLM_LIMIT_MM_FLAG=${VLLM_LIMIT_MM_FLAG:-}
+      - VLLM_INSTALL_AUDIO_DEPS=${VLLM_INSTALL_AUDIO_DEPS:-0}
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
       # Place nano_v3_reasoning_parser.py / super_v3_reasoning_parser.py here
@@ -28,6 +34,9 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
+        if [ "${VLLM_INSTALL_AUDIO_DEPS:-0}" = "1" ]; then
+          pip install 'vllm[audio]' -q
+        fi
         vllm serve ${VLLM_MODEL} \
           --served-model-name ${VLLM_SERVED_MODEL_NAME} \
           --host 0.0.0.0 \
@@ -48,7 +57,11 @@ services:
           ${VLLM_ASYNC_SCHEDULING_FLAG} \
           ${VLLM_CUDAGRAPH_FLAG} \
           ${VLLM_SPECULATIVE_CONFIG_FLAG} \
-          --reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN} \
+          ${VLLM_VIDEO_PRUNING_FLAG} \
+          ${VLLM_MEDIA_IO_KWARGS_FLAG} \
+          ${VLLM_ALLOWED_LOCAL_MEDIA_FLAG} \
+          ${VLLM_LIMIT_MM_FLAG} \
+          ${VLLM_REASONING_PARSER_PLUGIN:+--reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN}} \
           --reasoning-parser ${VLLM_REASONING_PARSER} \
           --enable-auto-tool-choice \
           --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
