@@ -69,6 +69,13 @@ model_list:
       input_cost_per_token: 0.00000005
       output_cost_per_token: 0.0000002
 
+  - model_name: mistral-medium-3.5
+    litellm_params:
+      model: ollama_chat/mistral-medium-3.5:128b
+      api_base: http://ollama:11434
+      input_cost_per_token: 0.0000004
+      output_cost_per_token: 0.000002
+
   - model_name: devstral-2
     litellm_params:
       model: ollama_chat/devstral-2-200k:latest
@@ -164,6 +171,12 @@ model_list:
     litellm_params:
       model: openai/tensorrt
       api_base: http://tensorrt-llm:8000/v1
+      api_key: api-key
+
+  - model_name: vllm
+    litellm_params:
+      model: openai/vllm
+      api_base: http://vllm:8000/v1
       api_key: api-key
 
 general_settings:

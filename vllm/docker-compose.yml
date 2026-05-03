@@ -9,6 +9,8 @@ services:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
     ports:
       - "${VLLM_PORT:-8000}:8000"
+    networks:
+      - litellm_model_backend
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
