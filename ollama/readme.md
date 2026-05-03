@@ -80,3 +80,10 @@ The underlying weights are identical — the new name is just an alias with a di
 
 - Naming convention like `modelname-200k` makes the intent self-documenting.
 - In Docker, run `ollama create` in an entrypoint/init script so the alias is recreated on container startup.
+
+# Container updates
+Ollama gets new, relevant updates all the time (new models, better performance), so that you may want to take the risk and use the latest tag and update the container regularly. To update the container, simply pull the latest image and redeploy the container on a cron job:
+
+```bash
+0 6 * * * cd /path/to/infra/ollama && docker compose stop && docker compose pull && docker compose up -d >> /var/log/ollama-update.log 2>&1
+```
