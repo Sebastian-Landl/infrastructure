@@ -1,6 +1,6 @@
 services:
   vllm:
-    image: vllm/vllm-openai:v0.20.0-cu130
+    image: vllm/vllm-openai:v0.20.1-cu130
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
     environment:
@@ -14,7 +14,9 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        python3 -m pip install -q 'vllm[audio]'
+        if [ "${VLLM_INSTALL_AUDIO_DEPS:-0}" = "1" ]; then
+          python3 -m pip install 'vllm[audio]'
+        fi
         exec vllm serve ${VLLM_MODEL} \
           --served-model-name ${VLLM_SERVED_MODEL_NAME} \
           --host 0.0.0.0 \
@@ -22,14 +24,15 @@ services:
           --trust-remote-code \
           --max-model-len ${VLLM_MAX_MODEL_LEN:-131072} \
           --gpu-memory-utilization ${VLLM_GPU_MEMORY_UTILIZATION:-0.85} \
-          --kv-cache-dtype fp8 \
+          --kv-cache-dtype ${VLLM_KV_CACHE_DTYPE:-fp8} \
           --max-num-seqs ${VLLM_MAX_NUM_SEQS:-8} \
-          --video-pruning-rate 0.5 \
-          --media-io-kwargs '{"video": {"fps": 2, "num_frames": 256}}' \
-          --allowed-local-media-path / \
-          --reasoning-parser nemotron_v3 \
+          ${VLLM_MOE_BACKEND:+--moe-backend ${VLLM_MOE_BACKEND}} \
+          --reasoning-parser ${VLLM_REASONING_PARSER:-nemotron_v3} \
+          ${VLLM_VIDEO_PRUNING_FLAG:-} \
+          ${VLLM_MEDIA_IO_KWARGS_FLAG:-} \
+          ${VLLM_ALLOWED_LOCAL_MEDIA_FLAG:-} \
           --enable-auto-tool-choice \
-          --tool-call-parser qwen3_coder
+          --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
     restart: unless-stopped
     deploy:
       resources:
