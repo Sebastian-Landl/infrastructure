@@ -9,36 +9,25 @@ services:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
     ports:
       - "${VLLM_PORT:-8000}:8000"
+    entrypoint: ["/bin/sh", "-c"]
     command:
-      - vllm
-      - serve
-      - ${VLLM_MODEL}
-      - --served-model-name
-      - ${VLLM_SERVED_MODEL_NAME}
-      - --host
-      - "0.0.0.0"
-      - --port
-      - "8000"
-      - --trust-remote-code
-      - --max-model-len
-      - "${VLLM_MAX_MODEL_LEN:-131072}"
-      - --gpu-memory-utilization
-      - "${VLLM_GPU_MEMORY_UTILIZATION:-0.85}"
-      - --kv-cache-dtype
-      - fp8
-      - --max-num-seqs
-      - "${VLLM_MAX_NUM_SEQS:-8}"
-      - --video-pruning-rate
-      - "0.5"
-      - --media-io-kwargs
-      - '{"video": {"fps": 2, "num_frames": 256}}'
-      - --allowed-local-media-path
-      - /
-      - --reasoning-parser
-      - nemotron_v3
-      - --enable-auto-tool-choice
-      - --tool-call-parser
-      - qwen3_coder
+      - |
+        python3 -m pip install -q 'vllm[audio]'
+        exec vllm serve ${VLLM_MODEL} \
+          --served-model-name ${VLLM_SERVED_MODEL_NAME} \
+          --host 0.0.0.0 \
+          --port 8000 \
+          --trust-remote-code \
+          --max-model-len ${VLLM_MAX_MODEL_LEN:-131072} \
+          --gpu-memory-utilization ${VLLM_GPU_MEMORY_UTILIZATION:-0.85} \
+          --kv-cache-dtype fp8 \
+          --max-num-seqs ${VLLM_MAX_NUM_SEQS:-8} \
+          --video-pruning-rate 0.5 \
+          --media-io-kwargs '{"video": {"fps": 2, "num_frames": 256}}' \
+          --allowed-local-media-path / \
+          --reasoning-parser nemotron_v3 \
+          --enable-auto-tool-choice \
+          --tool-call-parser qwen3_coder
     restart: unless-stopped
     deploy:
       resources:
