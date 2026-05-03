@@ -38,3 +38,7 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+networks:
+  litellm_model_backend:
+    external: true
