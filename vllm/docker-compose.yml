@@ -3,68 +3,42 @@ services:
     image: vllm/vllm-openai:v0.20.0-cu130
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
-    ulimits:
-      memlock: -1
-      stack: 67108864
     environment:
-      # --- SM12.1 / model-specific --- loaded from .env.nano or .env.super
-      - VLLM_NVFP4_GEMM_BACKEND=${VLLM_NVFP4_GEMM_BACKEND:-marlin}
-      - VLLM_USE_FLASHINFER_MOE_FP4=${VLLM_USE_FLASHINFER_MOE_FP4:-0}
-      - VLLM_FLASHINFER_MOE_BACKEND=${VLLM_FLASHINFER_MOE_BACKEND:-latency}
-      - VLLM_FLASHINFER_ALLREDUCE_BACKEND=${VLLM_FLASHINFER_ALLREDUCE_BACKEND:-}
-      - VLLM_TEST_FORCE_FP8_MARLIN=${VLLM_TEST_FORCE_FP8_MARLIN:-1}
-      - VLLM_ALLOW_LONG_MAX_MODEL_LEN=${VLLM_ALLOW_LONG_MAX_MODEL_LEN:-0}
-      - VLLM_MARLIN_USE_ATOMIC_ADD=1
-      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
       - HF_TOKEN=${HF_TOKEN:-}
-      # --- multimodal (Omni) --- set in .env.nano-omni, empty for text-only models
-      - VLLM_VIDEO_PRUNING_FLAG=${VLLM_VIDEO_PRUNING_FLAG:-}
-      - VLLM_MEDIA_IO_KWARGS_FLAG=${VLLM_MEDIA_IO_KWARGS_FLAG:-}
-      - VLLM_ALLOWED_LOCAL_MEDIA_FLAG=${VLLM_ALLOWED_LOCAL_MEDIA_FLAG:-}
-      - VLLM_LIMIT_MM_FLAG=${VLLM_LIMIT_MM_FLAG:-}
-      - VLLM_INSTALL_AUDIO_DEPS=${VLLM_INSTALL_AUDIO_DEPS:-0}
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
-      # Place nano_v3_reasoning_parser.py / super_v3_reasoning_parser.py here
-      - ./reasoning_parsers:/app/reasoning_parsers
     ports:
-      - "${VLLM_PORT:-8000}:${VLLM_PORT:-8000}"
-    # Shell entrypoint allows optional flags to be passed as empty strings
-    # without vllm choking on blank arguments
-    entrypoint: ["/bin/sh", "-c"]
+      - "${VLLM_PORT:-8000}:8000"
     command:
-      - |
-        if [ "${VLLM_INSTALL_AUDIO_DEPS:-0}" = "1" ]; then
-          pip install 'vllm[audio]' -q
-        fi
-        vllm serve ${VLLM_MODEL} \
-          --served-model-name ${VLLM_SERVED_MODEL_NAME} \
-          --host 0.0.0.0 \
-          --port ${VLLM_PORT:-8000} \
-          --dtype auto \
-          --kv-cache-dtype ${VLLM_KV_CACHE_DTYPE:-fp8} \
-          --tensor-parallel-size 1 \
-          --pipeline-parallel-size 1 \
-          --data-parallel-size 1 \
-          --trust-remote-code \
-          --gpu-memory-utilization ${VLLM_GPU_MEMORY_UTILIZATION:-0.80} \
-          --enable-chunked-prefill \
-          --max-num-seqs ${VLLM_MAX_NUM_SEQS:-4} \
-          --max-model-len ${VLLM_MAX_MODEL_LEN:-262144} \
-          --moe-backend ${VLLM_MOE_BACKEND:-marlin} \
-          --mamba_ssm_cache_dtype ${MAMBA_SSM_CACHE_DTYPE:-float32} \
-          ${VLLM_QUANTIZATION_FLAG} \
-          ${VLLM_ASYNC_SCHEDULING_FLAG} \
-          ${VLLM_CUDAGRAPH_FLAG} \
-          ${VLLM_SPECULATIVE_CONFIG_FLAG} \
-          ${VLLM_VIDEO_PRUNING_FLAG} \
-          ${VLLM_MEDIA_IO_KWARGS_FLAG} \
-          ${VLLM_ALLOWED_LOCAL_MEDIA_FLAG} \
-          ${VLLM_LIMIT_MM_FLAG} \
-          ${VLLM_REASONING_PARSER_PLUGIN:+--reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN}} \
-          --reasoning-parser ${VLLM_REASONING_PARSER} \
-          --enable-auto-tool-choice \
-          --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder}
+      - vllm
+      - serve
+      - ${VLLM_MODEL}
+      - --served-model-name
+      - ${VLLM_SERVED_MODEL_NAME}
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --trust-remote-code
+      - --max-model-len
+      - "${VLLM_MAX_MODEL_LEN:-131072}"
+      - --gpu-memory-utilization
+      - "${VLLM_GPU_MEMORY_UTILIZATION:-0.85}"
+      - --kv-cache-dtype
+      - fp8
+      - --max-num-seqs
+      - "${VLLM_MAX_NUM_SEQS:-8}"
+      - --video-pruning-rate
+      - "0.5"
+      - --media-io-kwargs
+      - '{"video": {"fps": 2, "num_frames": 256}}'
+      - --allowed-local-media-path
+      - /
+      - --reasoning-parser
+      - nemotron_v3
+      - --enable-auto-tool-choice
+      - --tool-call-parser
+      - qwen3_coder
     restart: unless-stopped
     deploy:
       resources:
