@@ -8,6 +8,7 @@ services:
       - VLLM_USE_FLASHINFER_MOE_FP4=${VLLM_USE_FLASHINFER_MOE_FP4:-}
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
+      - ./reasoning_parsers:/app/reasoning_parsers:ro
     ports:
       - "${VLLM_PORT:-8000}:8000"
     networks:
@@ -30,6 +31,7 @@ services:
           --max-num-batched-tokens ${VLLM_MAX_NUM_BATCHED_TOKENS:-2048} \
           --enable-chunked-prefill \
           ${VLLM_MOE_BACKEND:+--moe-backend ${VLLM_MOE_BACKEND}} \
+          ${VLLM_REASONING_PARSER_PLUGIN:+--reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN}} \
           --reasoning-parser ${VLLM_REASONING_PARSER:-nemotron_v3} \
           ${VLLM_VIDEO_PRUNING_FLAG:-} \
           ${VLLM_MEDIA_IO_KWARGS_FLAG:-} \
