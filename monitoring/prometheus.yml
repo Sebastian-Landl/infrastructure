@@ -23,3 +23,8 @@ scrape_configs:
     static_configs:
       - targets: ["litellm:4000"]
     metrics_path: /metrics
+
+  - job_name: "vllm"
+    static_configs:
+      - targets: ["vllm:4000"]
+    metrics_path: /metrics
