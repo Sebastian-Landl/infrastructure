@@ -21,7 +21,7 @@ services:
         exec vllm serve ${VLLM_MODEL} \
           --served-model-name ${VLLM_SERVED_MODEL_NAME} \
           --dtype ${VLLM_DTYPE:-bfloat16} \
-          --quantization ${VLLM_QUANTIZATION:-modelopt} \
+          ${VLLM_QUANTIZATION:+--quantization ${VLLM_QUANTIZATION}} \
           --host 0.0.0.0 \
           --port 8000 \
           --trust-remote-code \
