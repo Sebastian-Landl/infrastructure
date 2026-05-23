@@ -35,7 +35,7 @@ services:
           --max-num-batched-tokens ${VLLM_MAX_NUM_BATCHED_TOKENS:-2048} \
           --enable-chunked-prefill \
           --enable-prefix-caching \
-          --attention-backend flashinfer \
+          ${VLLM_ATTENTION_BACKEND:+--attention-backend ${VLLM_ATTENTION_BACKEND}} \
           ${VLLM_MOE_BACKEND:+--moe-backend ${VLLM_MOE_BACKEND}} \
           ${VLLM_REASONING_PARSER_PLUGIN:+--reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN}} \
           --reasoning-parser ${VLLM_REASONING_PARSER:-nemotron_v3} \
