@@ -1,143 +1,101 @@
 model_list:
-  - model_name: gpt-oss
-    litellm_params:
-      model: ollama_chat/gpt-oss:120b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.000000039
-      output_cost_per_token: 0.00000019
+  # - model_name: gpt-oss
+  #   litellm_params:
+  #     model: ollama_chat/gpt-oss:120b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.000000039
+  #     output_cost_per_token: 0.00000019
 
-  - model_name: qwen3.5
-    litellm_params:
-      model: ollama_chat/qwen3.5:122b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000026
-      output_cost_per_token: 0.00000208
+  # - model_name: qwen3.5
+  #   litellm_params:
+  #     model: ollama_chat/qwen3.5:122b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000026
+  #     output_cost_per_token: 0.00000208
 
-  - model_name: qwen3.6
-    litellm_params:
-      model: ollama_chat/qwen3.6:35b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000001625
-      output_cost_per_token: 0.0000013
+  # - model_name: qwen3.6
+  #   litellm_params:
+  #     model: ollama_chat/qwen3.6:35b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.0000001625
+  #     output_cost_per_token: 0.0000013
 
-  - model_name: qwen3.5-flash
-    litellm_params:
-      model: ollama_chat/qwen3.5:35b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000001625
-      output_cost_per_token: 0.0000013
+  # - model_name: qwen3-coder-next
+  #   litellm_params:
+  #     model: ollama_chat/qwen3-coder-next
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000012
+  #     output_cost_per_token: 0.00000075
 
-  - model_name: qwen3-coder-next
-    litellm_params:
-      model: ollama_chat/qwen3-coder-next
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000012
-      output_cost_per_token: 0.00000075
+  # - model_name: qwen3-coder
+  #   litellm_params:
+  #     model: ollama_chat/qwen3-coder:30b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000007
+  #     output_cost_per_token: 0.00000027
 
-  - model_name: qwen3-coder
-    litellm_params:
-      model: ollama_chat/qwen3-coder:30b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000007
-      output_cost_per_token: 0.00000027
+  # - model_name: nemotron-3-super
+  #   litellm_params:
+  #     model: ollama_chat/nemotron-3-super:120b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.0000001
+  #     output_cost_per_token: 0.0000005
 
-  - model_name: nemotron-3-super
-    litellm_params:
-      model: ollama_chat/nemotron-3-super:120b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000001
-      output_cost_per_token: 0.0000005
+  # - model_name: nemotron-3-nano
+  #   litellm_params:
+  #     model: ollama_chat/nemotron-3-nano:30b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000005
+  #     output_cost_per_token: 0.0000002
 
-  - model_name: nemotron-3-nano
-    litellm_params:
-      model: ollama_chat/nemotron-3-nano:30b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000005
-      output_cost_per_token: 0.0000002
+  # - model_name: nemotron-3-nano-omni
+  #   litellm_params:
+  #     model: ollama_chat/nemotron3:33b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000005
+  #     output_cost_per_token: 0.0000002
 
-  - model_name: nemotron-3-nano-omni
-    litellm_params:
-      model: ollama_chat/nemotron3:33b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000005
-      output_cost_per_token: 0.0000002
+  # - model_name: nemotron-cascade-2
+  #   litellm_params:
+  #     model: ollama_chat/nemotron-cascade-2:30b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.00000005
+  #     output_cost_per_token: 0.0000002
 
-  - model_name: nemotron-cascade-2
-    litellm_params:
-      model: ollama_chat/nemotron-cascade-2:30b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000005
-      output_cost_per_token: 0.0000002
+  # - model_name: devstral-small-2
+  #   litellm_params:
+  #     model: ollama_chat/devstral-small-2:24b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.0000001
+  #     output_cost_per_token: 0.0000003
 
-  - model_name: mistral-medium-3.5
-    litellm_params:
-      model: ollama_chat/mistral-medium-3.5:128b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000004
-      output_cost_per_token: 0.000002
+  # - model_name: ministral-3
+  #   litellm_params:
+  #     model: ollama_chat/ministral-3:14b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.0000002
+  #     output_cost_per_token: 0.0000002
 
-  - model_name: devstral-2
-    litellm_params:
-      model: ollama_chat/devstral-2-200k:latest
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000004
-      output_cost_per_token: 0.000002
+  # - model_name: ministral-3-nano
+  #   litellm_params:
+  #     model: ollama_chat/ministral-3-3b-16k:latest
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.0000001
+  #     output_cost_per_token: 0.0000001
 
-  - model_name: devstral-small-2
-    litellm_params:
-      model: ollama_chat/devstral-small-2:24b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000001
-      output_cost_per_token: 0.0000003
+  # - model_name: gemma4-nano
+  #   litellm_params:
+  #     model: ollama_chat/gemma4:e4b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.000000018
+  #     output_cost_per_token: 0.000000052
 
-  - model_name: ministral-3
-    litellm_params:
-      model: ollama_chat/ministral-3:14b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000002
-      output_cost_per_token: 0.0000002
-
-  - model_name: ministral-3-nano
-    litellm_params:
-      model: ollama_chat/ministral-3-3b-16k:latest
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.0000001
-      output_cost_per_token: 0.0000001
-
-  - model_name: gemma4
-    litellm_params:
-      model: ollama_chat/gemma4:31b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000014
-      output_cost_per_token: 0.0000004
-
-  - model_name: gemma4-flash
-    litellm_params:
-      model: ollama_chat/gemma4:26b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000007
-      output_cost_per_token: 0.0000002
-
-  - model_name: gemma4-nano
-    litellm_params:
-      model: ollama_chat/gemma4:e4b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.000000018
-      output_cost_per_token: 0.000000052
-
-  - model_name: gemma4-nano-flash
-    litellm_params:
-      model: ollama_chat/gemma4:e2b
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.000000009
-      output_cost_per_token: 0.000000026
-
-  - model_name: glm-4.7-flash
-    litellm_params:
-      model: ollama_chat/glm-4.7-flash
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.00000006
-      output_cost_per_token: 0.0000004
+  # - model_name: gemma4-nano-flash
+  #   litellm_params:
+  #     model: ollama_chat/gemma4:e2b
+  #     api_base: http://ollama:11434
+  #     input_cost_per_token: 0.000000009
+  #     output_cost_per_token: 0.000000026
 
   - model_name: qwen3-embedding-large
     litellm_params:
@@ -160,24 +118,19 @@ model_list:
       input_cost_per_token: 0.000000001
       mode: embedding
 
-  - model_name: embeddinggemma
-    litellm_params:
-      model: ollama/embeddinggemma:300m
-      api_base: http://ollama:11434
-      input_cost_per_token: 0.000000001
-      mode: embedding
+  # - model_name: tensorrt
+  #   litellm_params:
+  #     model: openai/tensorrt
+  #     api_base: http://tensorrt-llm:8000/v1
+  #     api_key: api-key
 
-  - model_name: tensorrt
-    litellm_params:
-      model: openai/tensorrt
-      api_base: http://tensorrt-llm:8000/v1
-      api_key: api-key
-
-  - model_name: vllm
+  - model_name: qwen3.6
     litellm_params:
       model: openai/vllm
       api_base: http://vllm:8000/v1
       api_key: api-key
+      input_cost_per_token: 0.0000001625
+      output_cost_per_token: 0.0000013
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
