@@ -1,6 +1,6 @@
 services:
   litellm:
-    image: ghcr.io/berriai/litellm:v1.82.0-stable.patch5
+    image: ghcr.io/berriai/litellm:v1.86.2
     container_name: litellm
     restart: unless-stopped
     #########################################
