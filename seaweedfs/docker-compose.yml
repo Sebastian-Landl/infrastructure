@@ -1,0 +1,44 @@
+name: seaweedfs
+
+# S3 endpoint:  http://<SEAWEEDFS_S3_DOMAIN or host>:8333
+# Master UI:    http://<SEAWEEDFS_MASTER_DOMAIN or host>:9333
+# Filer UI:     http://<SEAWEEDFS_FILER_DOMAIN or host>:8888
+#
+# Set the following environment variables in your .env or environment:
+# - SEAWEEDFS_IMAGE (recommended: pin to a stable tag, e.g. chrislusf/seaweedfs:vX.Y.Z)
+# - SEAWEEDFS_DATA (host path or volume name used for /data)
+# - SEAWEEDFS_S3_CONFIG_PATH (host path to s3.json)
+# - SEAWEEDFS_S3_DOMAIN, SEAWEEDFS_MASTER_DOMAIN, SEAWEEDFS_FILER_DOMAIN
+
+services:
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.31
+    container_name: seaweedfs
+    restart: unless-stopped
+    ports:
+      - "8333:8333"   # S3 API
+      - "23646:23646" # Admin UI
+    environment:
+      - S3_CONFIG=/etc/seaweedfs/s3.json
+    volumes:
+      - ${SEAWEEDFS_DATA:-seaweedfs_data}:/data
+      - ${SEAWEEDFS_S3_CONFIG_PATH:-./s3.json}:/etc/seaweedfs/s3.json:ro
+    command: mini -dir=/data -s3.config=/etc/seaweedfs/s3.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      - "traefik.http.routers.seaweedfs-s3-secure.entrypoints=websecure"
+      - "traefik.http.routers.seaweedfs-s3-secure.rule=Host(`${SEAWEEDFS_S3_DOMAIN}`)"
+      - "traefik.http.routers.seaweedfs-s3-secure.service=seaweedfs-s3"
+      - "traefik.http.services.seaweedfs-s3-secure.loadbalancer.server.port=8333"
+      - "traefik.http.routers.seaweedfs-admin-secure.entrypoints=websecure"
+      - "traefik.http.routers.seaweedfs-admin-secure.rule=Host(`${SEAWEEDFS_ADMIN_DOMAIN}`)"
+      - "traefik.http.routers.seaweedfs-admin-secure.service=seaweedfs-admin"
+      - "traefik.http.services.seaweedfs-admin-secure.loadbalancer.server.port=23646"
+      - "traefik.http.routers.seaweedfs-admin-secure.middlewares=user-auth@file"
+    networks:
+      - public
+
+networks:
+  public:
+    external: true

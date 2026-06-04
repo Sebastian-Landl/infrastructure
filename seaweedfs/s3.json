@@ -1,0 +1,48 @@
+{
+  "identities": [
+    {
+      "name": "admin",
+      "credentials": [
+        {
+          "accessKey": "admin",
+          "secretKey": "REPLACE_WITH_STRONG_SECRET_ADMIN"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "Write",
+        "List",
+        "Tagging"
+      ]
+    },
+    {
+      "name": "writer",
+      "credentials": [
+        {
+          "accessKey": "writer",
+          "secretKey": "REPLACE_WITH_STRONG_SECRET_WRITER"
+        }
+      ],
+      "actions": [
+        "Read",
+        "Write",
+        "List",
+        "Tagging"
+      ]
+    },
+    {
+      "name": "readonly",
+      "credentials": [
+        {
+          "accessKey": "readonly",
+          "secretKey": "REPLACE_WITH_STRONG_SECRET_READONLY"
+        }
+      ],
+      "actions": [
+        "Read",
+        "List"
+      ]
+    }
+  ]
+}
