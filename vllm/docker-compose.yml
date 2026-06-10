@@ -1,6 +1,6 @@
 services:
   vllm:
-    image: vllm/vllm-openai:v0.20.2
+    image: vllm/vllm-openai:v0.22.1
     container_name: ${CONTAINER_NAME:-vllm}
     ipc: host
     environment:
@@ -22,6 +22,7 @@ services:
           python3 -m pip install 'vllm[audio]'
         fi
         exec vllm serve ${VLLM_MODEL} \
+          ${VLLM_TOKENIZER_MODE:+--tokenizer-mode ${VLLM_TOKENIZER_MODE}} \
           --served-model-name ${VLLM_SERVED_MODEL_NAME} \
           --dtype ${VLLM_DTYPE:-bfloat16} \
           ${VLLM_QUANTIZATION:+--quantization ${VLLM_QUANTIZATION}} \
