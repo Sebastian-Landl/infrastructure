@@ -1,4 +1,24 @@
 services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:v1.7.6
+    container_name: crowdsec
+    restart: unless-stopped
+    networks:
+      - public
+    environment:
+      COLLECTIONS: "crowdsecurity/traefik"
+      CUSTOM_HOSTNAME: crowdsec
+      # Must match the key in traefik/configurations/dynamic.yml crowdsec-bouncer middleware
+      BOUNCER_KEY_TRAEFIK: ${CROWDSEC_BOUNCER_KEY}
+    volumes:
+      - ./acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      - ./whitelists-custom.yaml:/etc/crowdsec/parsers/s02-enrich/whitelists-custom.yaml:ro
+      - ${TRAEFIK_LOG_PATH}:/var/log/traefik:ro
+      - ${CROWDSEC_DB_PATH}:/var/lib/crowdsec/data/
+      - ${CROWDSEC_CONFIG_PATH}:/etc/crowdsec/
+    labels:
+      - "traefik.enable=false"
+
   traefik:
     image: traefik:v3.6.10
     container_name: traefik
@@ -21,6 +41,9 @@ services:
       - "traefik.http.routers.traefik-secure.middlewares=user-auth@file"
       - "traefik.http.routers.traefik-secure.service=api@internal"
     restart: unless-stopped
+    depends_on:
+      crowdsec:
+        condition: service_healthy
 
 networks:
   public:
