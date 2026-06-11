@@ -27,4 +27,26 @@ nameserver 1.1.1.2
 ```
 which means that instead of using `systemd-resolved` now the `pihole` container will be used for dns resolution. Afer pihole is running, you may change it to `127.0.0.1` to use the pihole container for dns resolution on the host machine as well.
 
+If `systemd-resolved` is still started indirectly by another service, disabling it alone may not keep it off. You can discover the dependency chain with:
+
+```bash
+systemctl list-dependencies --reverse systemd-resolved.service
+```
+
+In that case, disable the port 53 stub listener instead by setting:
+
+```ini
+# /etc/systemd/resolved.conf
+[Resolve]
+DNSStubListener=no
+```
+
+then restart `systemd-resolved`:
+
+```bash
+sudo systemctl restart systemd-resolved
+```
+
+This keeps `resolved` running for dependency purposes, but frees port 53 for Pi-hole.
+
 **Be careful when doing this!** This disables the service responsible for DNS resolution on your server, meaning it won't be able to resolve names anymore. Once you edit the `/etc/resolv.conf`, you are good to go again, but be aware of what you are doing.
