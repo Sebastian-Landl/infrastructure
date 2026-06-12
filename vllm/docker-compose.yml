@@ -23,6 +23,8 @@ services:
         fi
         exec vllm serve ${VLLM_MODEL} \
           ${VLLM_TOKENIZER_MODE:+--tokenizer-mode ${VLLM_TOKENIZER_MODE}} \
+          ${VLLM_CONFIG_FORMAT:+--config-format ${VLLM_CONFIG_FORMAT}} \
+          ${VLLM_LOAD_FORMAT:+--load-format ${VLLM_LOAD_FORMAT}} \
           --served-model-name ${VLLM_SERVED_MODEL_NAME} \
           --dtype ${VLLM_DTYPE:-bfloat16} \
           ${VLLM_QUANTIZATION:+--quantization ${VLLM_QUANTIZATION}} \
