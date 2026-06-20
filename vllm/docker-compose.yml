@@ -46,7 +46,8 @@ services:
           ${VLLM_ALLOWED_LOCAL_MEDIA_FLAG:-} \
           --enable-auto-tool-choice \
           --tool-call-parser ${VLLM_TOOL_CALL_PARSER:-qwen3_coder} \
-          ${VLLM_SPECULATIVE_CONFIG_FLAG:-}
+          ${VLLM_SPECULATIVE_CONFIG_FLAG:-} \
+          ${COMPILATION_CONFIG_FLAG:-}
 
     restart: unless-stopped
     deploy:
