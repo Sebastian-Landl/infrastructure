@@ -10,6 +10,7 @@ services:
     volumes:
       - ${HF_CACHE_DIR:-~/.cache/huggingface}:/root/.cache/huggingface
       - ./reasoning_parsers:/app/reasoning_parsers:ro
+      - ./chat_templates:/app/chat_templates:ro
     networks:
       - litellm_model_backend
       - monitoring
@@ -40,6 +41,7 @@ services:
           ${VLLM_ATTENTION_BACKEND:+--attention-backend ${VLLM_ATTENTION_BACKEND}} \
           ${VLLM_MOE_BACKEND:+--moe-backend ${VLLM_MOE_BACKEND}} \
           ${VLLM_REASONING_PARSER_PLUGIN:+--reasoning-parser-plugin ${VLLM_REASONING_PARSER_PLUGIN}} \
+          ${VLLM_CHAT_TEMPLATE:+--chat-template ${VLLM_CHAT_TEMPLATE}} \
           --reasoning-parser ${VLLM_REASONING_PARSER:-nemotron_v3} \
           ${VLLM_VIDEO_PRUNING_FLAG:-} \
           ${VLLM_MEDIA_IO_KWARGS_FLAG:-} \
