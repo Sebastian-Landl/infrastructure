@@ -1,0 +1,13 @@
+services:
+  zerotier:
+    image: zerotier/zerotier:1.14.2
+    container_name: zerotier
+    devices:
+      - /dev/net/tun
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    volumes:
+      - ${ZEROTIER_DATA_PATH}:/var/lib/zerotier-one
+    restart: unless-stopped
