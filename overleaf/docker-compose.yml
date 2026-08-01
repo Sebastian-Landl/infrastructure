@@ -1,0 +1,121 @@
+services:
+  overleaf:
+    image: pingwin02/sharelatex-arm:full-2026-05-04
+    container_name: overleaf
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      seaweedfs-init:
+        condition: service_completed_successfully
+    stop_grace_period: 60s
+    volumes:
+      - ${OVERLEAF_DATA_PATH}:/var/lib/overleaf
+    environment:
+      OVERLEAF_APP_NAME: ${APP_NAME:-Overleaf CE}
+      OVERLEAF_SITE_URL: https://${DOMAIN}
+      OVERLEAF_NAV_TITLE: ${APP_NAME:-Overleaf CE}
+      OVERLEAF_ADMIN_EMAIL: ${ADMIN_EMAIL}
+
+      OVERLEAF_MONGO_URL: mongodb://mongo:27017/overleaf?replicaSet=overleaf
+      OVERLEAF_REDIS_HOST: redis
+      REDIS_HOST: redis
+
+      ENABLE_CONVERSIONS: "true"
+      EMAIL_CONFIRMATION_DISABLED: "true"
+
+      # --- S3 filestore backend: dedicated SeaweedFS below, not shared infra ---
+      OVERLEAF_FILESTORE_BACKEND: s3
+      OVERLEAF_FILESTORE_USER_FILES_BUCKET_NAME: ${S3_USER_FILES_BUCKET}
+      OVERLEAF_FILESTORE_TEMPLATE_FILES_BUCKET_NAME: ${S3_TEMPLATE_FILES_BUCKET}
+      OVERLEAF_FILESTORE_S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      OVERLEAF_FILESTORE_S3_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      OVERLEAF_FILESTORE_S3_SIGNING_KEY: ${S3_SIGNING_KEY}
+      OVERLEAF_FILESTORE_S3_ENDPOINT: http://seaweedfs:8333
+      OVERLEAF_FILESTORE_S3_PATH_STYLE: "true"
+      OVERLEAF_FILESTORE_S3_REGION: ""
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=public
+      - traefik.http.routers.overleaf-secure.entrypoints=websecure
+      - traefik.http.routers.overleaf-secure.rule=Host(`${DOMAIN}`)
+      - "traefik.http.routers.overleaf-secure.service=overleaf"
+      - traefik.http.services.overleaf.loadbalancer.server.port=80
+    networks:
+      - overleaf
+      - public
+
+  mongo:
+    image: mongo:8.3.7
+    container_name: overleaf-mongo
+    restart: unless-stopped
+    command: ["--replSet", "overleaf", "--bind_ip_all"]
+    volumes:
+      - ${MONGO_DATA_PATH}:/data/db
+    healthcheck:
+      # Self-healing replica-set init: rs.status() fails on first boot, so
+      # this initiates the single-node replica set automatically. Overleaf
+      # needs Mongo transactions, which requires a replica set even solo.
+      test: >
+        echo "try { rs.status().ok } catch (e) { rs.initiate({_id:'overleaf',members:[{_id:0,host:'mongo:27017'}]}) }"
+        | mongosh --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    networks:
+      - overleaf
+
+  redis:
+    image: redis:8.6-alpine
+    container_name: overleaf-redis
+    restart: unless-stopped
+    volumes:
+      - ${REDIS_DATA_PATH}:/data
+    networks:
+      - overleaf
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.40
+    container_name: overleaf-seaweedfs
+    restart: unless-stopped
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+    volumes:
+      - ${SEAWEEDFS_DATA_PATH}:/data
+    command: "mini -dir=/data -s3.port=8333 -ip=seaweedfs"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9333/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - overleaf
+
+  seaweedfs-init:
+    image: chrislusf/seaweedfs:4.40
+    container_name: overleaf-seaweedfs-init
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        until echo 'fs.ls /' | weed shell -master=seaweedfs:9333 >/dev/null 2>&1; do
+          echo "waiting for seaweedfs master..."
+          sleep 2
+        done
+        printf 's3.bucket.create -name %s\ns3.bucket.create -name %s\n' \
+          "${S3_USER_FILES_BUCKET}" "${S3_TEMPLATE_FILES_BUCKET}" \
+          | weed shell -master=seaweedfs:9333
+    networks:
+      - overleaf
+
+networks:
+  overleaf:
+  public:
+    external: true
