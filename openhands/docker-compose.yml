@@ -1,0 +1,31 @@
+name: openhands
+
+services:
+  openhands:
+    image: docker.openhands.dev/openhands/openhands:${OPENHANDS_VERSION}
+    container_name: openhands
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${OPENHANDS_STATE_DIR}:/.openhands
+      - ${WORKSPACE_DIR}:/workspace
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      AGENT_SERVER_IMAGE_REPOSITORY: ${AGENT_SERVER_IMAGE_REPOSITORY:-ghcr.io/openhands/agent-server}
+      AGENT_SERVER_IMAGE_TAG: ${AGENT_SERVER_IMAGE_TAG:-1.26.0-python}
+      LOG_ALL_EVENTS: "true"
+    networks:
+      - public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=public"
+      - "traefik.http.routers.openhands-secure.entrypoints=websecure"
+      - "traefik.http.routers.openhands-secure.rule=Host(`${OPENHANDS_DOMAIN:-openhands.local}`)"
+      - "traefik.http.routers.openhands-secure.middlewares=user-auth@file"
+      - "traefik.http.routers.openhands-secure.service=openhands"
+      - "traefik.http.services.openhands.loadbalancer.server.port=3000"
+
+networks:
+  public:
+    external: true
